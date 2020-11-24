@@ -1725,7 +1725,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2094343507}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 360
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -4310,7 +4310,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1387068181}
+        m_TargetAssemblyTypeName: RoboticArm, Assembly-CSharp
+        m_MethodName: RotationalType
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1093886584
 GameObject:
@@ -6178,10 +6190,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08255ad95102e8741b89282333db1564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationalType: {fileID: 1084467020}
+  prismaticType: {fileID: 1819276364}
   redCylinder: {fileID: 1978570037}
   aSlider: {fileID: 52898294}
   inputA: {fileID: 1082866567}
   deltaSlider: {fileID: 524622810}
+  prevoiusValueDeltaOnX: 0
   inputDelta: {fileID: 712028782}
 --- !u!4 &1387068182
 Transform:
@@ -6941,7 +6956,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1610258994}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -8167,7 +8182,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1387068181}
+        m_TargetAssemblyTypeName: RoboticArm, Assembly-CSharp
+        m_MethodName: PrismaticType
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &1821107270
 GameObject:

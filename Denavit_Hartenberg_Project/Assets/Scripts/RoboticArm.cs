@@ -7,6 +7,9 @@ using TMPro;
 
 public class RoboticArm : MonoBehaviour
 {
+    [Header("Type rotation")]
+    public Toggle rotationalType;
+    public Toggle prismaticType;
 
     public Transform redCylinder;
 
@@ -17,7 +20,7 @@ public class RoboticArm : MonoBehaviour
 
     [Header("Delta Slider")]
     public Slider deltaSlider;
-    float prevoiusValueDeltaOnX;
+    public float prevoiusValueDeltaOnX;
     float previousValueDeltaOnY;
     public InputField inputDelta;
 
@@ -29,6 +32,26 @@ public class RoboticArm : MonoBehaviour
         inputA.text = "0";
         inputDelta.text = "0";
     }
+
+    public void RotationalType()
+    {
+        if (rotationalType.isOn)
+        {
+            prismaticType.isOn = false;
+            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, 0, 0), 1f);
+        }
+
+    }
+
+    public void PrismaticType()
+    {
+        if(prismaticType.isOn)
+        {
+            rotationalType.isOn = false;
+            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, 0, 270), 1f);
+        }
+    }
+
 
     public void ControlA(float value)
     {
@@ -53,23 +76,32 @@ public class RoboticArm : MonoBehaviour
 
     public void ControlDelta(float value)
     {
-        Debug.Log("Modifico Rotación");
-        Debug.Log(redCylinder.rotation);
-        Debug.Log(redCylinder.eulerAngles);
+        //Debug.Log("Modifico Rotación");
+        //Debug.Log(redCylinder.rotation);
+        //Debug.Log(redCylinder.eulerAngles);
 
-        if(redCylinder.eulerAngles.z == 270)
+        /*if(redCylinder.eulerAngles.z == 270)
         {
             float delta = value - prevoiusValueDeltaOnX;
             Debug.Log("Roto");
-            redCylinder.Rotate(Vector3.right * delta * 360);
+            redCylinder.Rotate(new Vector3(0f, delta * 360, 0f), Space.Self);// Vector3.down * delta * 360);
             prevoiusValueDeltaOnX = value;
         }
         else
+        {*/
+
+        if (rotationalType.isOn)
         {
-            float delta = value - previousValueDeltaOnY;
-            redCylinder.Rotate(Vector3.up * delta * 360);
-            previousValueDeltaOnY = value;
+            Debug.Log("Modifico Rotación");
+            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, value, 0), 1f);
         }
+        else if (prismaticType.isOn)
+        {
+            Debug.Log("Modifico Rotación acostado");
+            redCylinder.rotation = Quaternion.Slerp(redCylinder.localRotation, Quaternion.Euler(value, 0, 270), 1f);
+        }
+
+        //}
     }
 
     //Called from the Delta input field event
@@ -87,7 +119,8 @@ public class RoboticArm : MonoBehaviour
         }
         else
         {
-            inputDelta.text = redCylinder.localEulerAngles.y.ToString();
+
+            inputDelta.text = deltaSlider.value.ToString();
         }
     }
 }
