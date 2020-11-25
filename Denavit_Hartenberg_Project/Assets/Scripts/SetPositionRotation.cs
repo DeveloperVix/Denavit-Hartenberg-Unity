@@ -7,19 +7,17 @@ public class SetPositionRotation : MonoBehaviour
     public Transform pointAxis;
     public Transform rotationAxis;
 
-
-    private void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        transform.position = pointAxis.position;
+        if(pointAxis != null)
+            transform.position = pointAxis.position;        
+    }
 
-        //oldEulerAngles = rotationAxis.rotation.eulerAngles;
-        
+    public void InitPositionRotation(Transform pointAxis, Transform rotationAxis)
+    {
+        this.pointAxis = pointAxis;
+        this.rotationAxis = rotationAxis;
     }
 
     public void Rotating()

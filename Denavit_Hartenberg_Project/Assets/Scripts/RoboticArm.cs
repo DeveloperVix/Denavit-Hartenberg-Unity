@@ -11,7 +11,7 @@ public class RoboticArm : MonoBehaviour
     public Toggle rotationalType;
     public Toggle prismaticType;
 
-    public Transform redCylinder;
+    public Transform curRedCylinder;
 
     [Header("A Slider")]
     public Slider aSlider;
@@ -20,8 +20,6 @@ public class RoboticArm : MonoBehaviour
 
     [Header("Delta Slider")]
     public Slider deltaSlider;
-    public float prevoiusValueDeltaOnX;
-    float previousValueDeltaOnY;
     public InputField inputDelta;
 
     // Start is called before the first frame update
@@ -38,7 +36,7 @@ public class RoboticArm : MonoBehaviour
         if (rotationalType.isOn)
         {
             prismaticType.isOn = false;
-            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, 0, 0), 1f);
+            curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.rotation, Quaternion.Euler(0, 0, 0), 1f);
         }
 
     }
@@ -48,7 +46,7 @@ public class RoboticArm : MonoBehaviour
         if(prismaticType.isOn)
         {
             rotationalType.isOn = false;
-            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, 0, 270), 1f);
+            curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.rotation, Quaternion.Euler(0, 0, 270), 1f);
         }
     }
 
@@ -56,7 +54,7 @@ public class RoboticArm : MonoBehaviour
     public void ControlA(float value)
     {
         float a = value - previousValueA;
-        redCylinder.localScale += Vector3.up * a;
+        curRedCylinder.localScale += Vector3.up * a;
         previousValueA = value;
         
     }
@@ -71,34 +69,20 @@ public class RoboticArm : MonoBehaviour
     public void InputA()
     {
         inputA.text = aSlider.value.ToString();
-        inputDelta.text = redCylinder.localEulerAngles.y.ToString();
+        inputDelta.text = curRedCylinder.localEulerAngles.y.ToString();
     }
 
     public void ControlDelta(float value)
     {
-        //Debug.Log("Modifico Rotación");
-        //Debug.Log(redCylinder.rotation);
-        //Debug.Log(redCylinder.eulerAngles);
-
-        /*if(redCylinder.eulerAngles.z == 270)
-        {
-            float delta = value - prevoiusValueDeltaOnX;
-            Debug.Log("Roto");
-            redCylinder.Rotate(new Vector3(0f, delta * 360, 0f), Space.Self);// Vector3.down * delta * 360);
-            prevoiusValueDeltaOnX = value;
-        }
-        else
-        {*/
-
         if (rotationalType.isOn)
         {
             Debug.Log("Modifico Rotación");
-            redCylinder.rotation = Quaternion.Slerp(redCylinder.rotation, Quaternion.Euler(0, value, 0), 1f);
+            curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.rotation, Quaternion.Euler(0, value, 0), 1f);
         }
         else if (prismaticType.isOn)
         {
             Debug.Log("Modifico Rotación acostado");
-            redCylinder.rotation = Quaternion.Slerp(redCylinder.localRotation, Quaternion.Euler(value, 0, 270), 1f);
+            curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.localRotation, Quaternion.Euler(value, 0, 270), 1f);
         }
 
         //}
@@ -119,7 +103,6 @@ public class RoboticArm : MonoBehaviour
         }
         else
         {
-
             inputDelta.text = deltaSlider.value.ToString();
         }
     }
