@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
-public class LinksStructure : MonoBehaviour
-{
-    [System.Serializable]
+
+[System.Serializable]
     public class Link
     {
         public string nameLink;
@@ -22,6 +20,8 @@ public class LinksStructure : MonoBehaviour
         public float delta;
     }
 
+public class LinksStructure : MonoBehaviour
+{
     public TMP_Dropdown optionsLink;
     List<string> options = new List<string>();
 
@@ -31,7 +31,8 @@ public class LinksStructure : MonoBehaviour
         2 = redCylinder
     */
     public GameObject[] prefabs;
-    public List<Link> allLinks;
+
+    LinksInitialization initLinks = new LinksInitialization();
     
     private void Start()
     {
@@ -51,23 +52,13 @@ public class LinksStructure : MonoBehaviour
         newLink.pointAxisRedCylinder = Instantiate(prefabs[1], new Vector3(0,0,0), Quaternion.identity);
         
 
-        allLinks.Add(newLink);
-        newLink.nameLink = "Nodo " + (allLinks.Count-1);
+        DH_Calculates.Instance.allLinks.Add(newLink);
+        newLink.nameLink = "Nodo " + (DH_Calculates.Instance.allLinks.Count-1);
         options.Add(newLink.nameLink);
-
-        //Initialization
-        if(allLinks.Count > 1)
-        {
-            newLink.blueCylinder.GetComponent<SetPositionRotation>().InitPositionRotation(allLinks[allLinks.Count-2].redCylinder.transform.GetChild(1),null);
-        }
-        newLink.pointAxisBlueCylinder.GetComponent<SetPositionRotation>().InitPositionRotation(newLink.blueCylinder.transform, newLink.blueCylinder.transform);
-
-        newLink.redCylinder.GetComponent<SetPositionRotation>().InitPositionRotation(newLink.blueCylinder.transform.GetChild(1), null);
-        newLink.pointAxisRedCylinder.GetComponent<SetPositionRotation>().InitPositionRotation(newLink.redCylinder.transform.GetChild(1), newLink.redCylinder.transform);
-        
         optionsLink.ClearOptions();
         optionsLink.AddOptions(options);
-        //Ahora colocar las rotaciones de inicio
+
+        initLinks.InitLinks(DH_Calculates.Instance.allLinks);        
     }
 
 }

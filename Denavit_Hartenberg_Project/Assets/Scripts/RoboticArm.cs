@@ -7,11 +7,22 @@ using TMPro;
 
 public class RoboticArm : MonoBehaviour
 {
+
+    [Header("Actual link")]
+    public Transform curRedCylinder;
+    public SetPositionRotation pointRedAxis;
+    public Transform curBlueCylinder;
+    public SetPositionRotation pointBlueAxis;
+    
+
+    [Header("Options Nodes")]
+    public TMP_Dropdown optionsLink;
+
     [Header("Type rotation")]
     public Toggle rotationalType;
     public Toggle prismaticType;
 
-    public Transform curRedCylinder;
+    
 
     [Header("A Slider")]
     public Slider aSlider;
@@ -25,10 +36,20 @@ public class RoboticArm : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        optionsLink.ClearOptions();
         aSlider.onValueChanged.AddListener(ControlA);
         deltaSlider.onValueChanged.AddListener(ControlDelta);
         inputA.text = "0";
         inputDelta.text = "0";
+    }
+
+    public void SetCurrentLink()
+    {
+        curRedCylinder = DH_Calculates.Instance.allLinks[optionsLink.value].redCylinder.transform;
+        pointRedAxis = DH_Calculates.Instance.allLinks[optionsLink.value].pointAxisRedCylinder.GetComponent<SetPositionRotation>();
+
+        curBlueCylinder = DH_Calculates.Instance.allLinks[optionsLink.value].blueCylinder.transform;
+        pointBlueAxis = DH_Calculates.Instance.allLinks[optionsLink.value].pointAxisBlueCylinder.GetComponent<SetPositionRotation>();
     }
 
     public void RotationalType()
@@ -38,7 +59,6 @@ public class RoboticArm : MonoBehaviour
             prismaticType.isOn = false;
             curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.rotation, Quaternion.Euler(0, 0, 0), 1f);
         }
-
     }
 
     public void PrismaticType()
@@ -84,8 +104,16 @@ public class RoboticArm : MonoBehaviour
             Debug.Log("Modifico Rotación acostado");
             curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.localRotation, Quaternion.Euler(value, 0, 270), 1f);
         }
+    }
 
-        //}
+    public void RotateRedCylinderAxis()
+    {
+        pointRedAxis.Rotating();
+    }
+
+    public void FinishRotationRedCylinderAxis()
+    {
+        pointRedAxis.Rotating();
     }
 
     //Called from the Delta input field event
