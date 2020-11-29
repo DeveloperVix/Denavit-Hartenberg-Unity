@@ -28,5 +28,6 @@ public class SetPositionRotation : MonoBehaviour
     public void FinishRotation()
     {
         transform.SetParent(null);
+        transform.localScale = new Vector3(1f,1f,1f);
     }
 }

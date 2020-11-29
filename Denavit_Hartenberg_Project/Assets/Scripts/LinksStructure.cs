@@ -17,7 +17,7 @@ using TMPro;
         public float teta;
         public float d;
         public float a;
-        public float delta;
+        public float alfa;
     }
 
 public class LinksStructure : MonoBehaviour
@@ -48,10 +48,10 @@ public class LinksStructure : MonoBehaviour
         
         newLink.pointAxisBlueCylinder = Instantiate(prefabs[1], new Vector3(0,0,0), Quaternion.identity);
 
-        newLink.redCylinder = Instantiate(prefabs[2], new Vector3(0,0,0), Quaternion.identity);
+        newLink.redCylinder = Instantiate(prefabs[2], new Vector3(0,0,0), Quaternion.Euler(0, 0, 270));
         newLink.pointAxisRedCylinder = Instantiate(prefabs[1], new Vector3(0,0,0), Quaternion.identity);
         
-
+        
         DH_Calculates.Instance.allLinks.Add(newLink);
         newLink.nameLink = "Nodo " + (DH_Calculates.Instance.allLinks.Count-1);
         options.Add(newLink.nameLink);
