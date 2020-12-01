@@ -8,7 +8,7 @@ using TMPro;
 public class RoboticArm : MonoBehaviour
 {
     private static RoboticArm instance;
-    public static RoboticArm Instance { get => instance;}
+    public static RoboticArm Instance { get => instance; }
 
 
     [Header("Actual link")]
@@ -16,10 +16,11 @@ public class RoboticArm : MonoBehaviour
     public SetPositionRotation pointRedAxis;
     public Transform curBlueCylinder;
     public SetPositionRotation pointBlueAxis;
-    
+
 
     [Header("Options Nodes")]
     public TMP_Dropdown optionsLink;
+    Slider curSlider;
 
     [Header("Type rotation")]
     public Toggle rotationalType;
@@ -52,16 +53,19 @@ public class RoboticArm : MonoBehaviour
 
         optionsLink.ClearOptions();
         tetaSlider.onValueChanged.AddListener(ControlTeta);
+        tetaSlider.onValueChanged.AddListener(InputTeta);
         dSlider.onValueChanged.AddListener(ControlD);
+        dSlider.onValueChanged.AddListener(InputD);
         aSlider.onValueChanged.AddListener(ControlA);
         alfaSlider.onValueChanged.AddListener(ControlAlfa);
-        
+
         inputTeta.text = "0";
         inputD.text = "0";
         inputA.text = "0";
         inputAlfa.text = "0";
     }
 
+    //Based on the option selected
     public void SetCurrentLink()
     {
         curRedCylinder = DH_Calculates.Instance.allLinks[optionsLink.value].redCylinder.transform;
@@ -75,6 +79,25 @@ public class RoboticArm : MonoBehaviour
         aSlider.onValueChanged.RemoveListener(ControlA);
         alfaSlider.onValueChanged.RemoveListener(ControlAlfa);
 
+        curSlider = DH_Calculates.Instance.allLinks[optionsLink.value].teta_d_Slider.GetComponent<Slider>();
+
+        if (rotationalType.isOn)
+        {
+            
+            curSlider.onValueChanged.AddListener(ControlTeta);
+            curSlider.onValueChanged.AddListener(InputTeta);
+            curSlider.maxValue = 360;
+            curSlider.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "θ"+optionsLink.value;
+            curSlider.value = DH_Calculates.Instance.allLinks[optionsLink.value].teta;
+        }
+        else
+        {
+            curSlider.onValueChanged.AddListener(ControlD);
+            curSlider.onValueChanged.AddListener(InputD);
+            curSlider.maxValue = 10;
+            curSlider.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "d"+optionsLink.value;
+            curSlider.value = DH_Calculates.Instance.allLinks[optionsLink.value].d;
+        }
 
         inputTeta.text = DH_Calculates.Instance.allLinks[optionsLink.value].teta.ToString();
         inputD.text = DH_Calculates.Instance.allLinks[optionsLink.value].d.ToString();
@@ -95,26 +118,43 @@ public class RoboticArm : MonoBehaviour
         if (rotationalType.isOn)
         {
             prismaticType.isOn = false;
+            curSlider.onValueChanged.RemoveAllListeners();
             //Show teta
+            curSlider.onValueChanged.AddListener(ControlTeta);
+            curSlider.onValueChanged.AddListener(InputTeta);
+            curSlider.maxValue = 360;
+
+            curSlider.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "θ"+optionsLink.value;
+            curSlider.value = DH_Calculates.Instance.allLinks[optionsLink.value].teta;
         }
     }
 
     public void PrismaticType()
     {
-        if(prismaticType.isOn)
+        if (prismaticType.isOn)
         {
             rotationalType.isOn = false;
+            curSlider.onValueChanged.RemoveAllListeners();
             //Show d
+            curSlider.onValueChanged.AddListener(ControlD);
+            curSlider.onValueChanged.AddListener(InputD);
+            curSlider.maxValue = 10;
+
+            curSlider.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "d"+optionsLink.value;
+            curSlider.value = DH_Calculates.Instance.allLinks[optionsLink.value].d;
         }
     }
 
     #region Teta
     public void ControlTeta(float value)
     {
-        Debug.Log("Modifico Rotación en radio");
+       // Debug.Log("Modifico Rotación en radio");
         curBlueCylinder.rotation = Quaternion.Slerp(curRedCylinder.localRotation, Quaternion.Euler(0f, value, 0), 1f);
 
         DH_Calculates.Instance.allLinks[optionsLink.value].teta = value;
+        curSlider.value = value;
+
+        BlueRotate();
     }
 
     //Called from the Teta input field event, when the user enter data
@@ -124,13 +164,13 @@ public class RoboticArm : MonoBehaviour
     }
 
     //Called from the Teta slider event
-    public void InputTeta()
+    public void InputTeta(float value)
     {
-        inputTeta.text = tetaSlider.value.ToString();
-        
+        inputTeta.text = value.ToString();
+
     }
     #endregion
-    
+
     #region D
     public void ControlD(float value)
     {
@@ -139,6 +179,9 @@ public class RoboticArm : MonoBehaviour
         previousValueD = value;
 
         DH_Calculates.Instance.allLinks[optionsLink.value].d = value;
+        curSlider.value = value;
+
+        BlueFinishRotation();
     }
 
     public void SetInputD()
@@ -146,20 +189,20 @@ public class RoboticArm : MonoBehaviour
         dSlider.value = float.Parse(inputD.text);
     }
 
-    public void InputD()
+    public void InputD(float value)
     {
-        inputD.text = dSlider.value.ToString();
+        inputD.text = value.ToString();
     }
 
     #endregion
-    
+
     #region A
     public void ControlA(float value)
     {
         float a = value - previousValueA;
         curRedCylinder.localScale += Vector3.up * a;
         previousValueA = value;
-        
+
         DH_Calculates.Instance.allLinks[optionsLink.value].a = value;
     }
 
@@ -180,7 +223,7 @@ public class RoboticArm : MonoBehaviour
     public void ControlAlfa(float value)
     {
         Debug.Log("Modifico Rotación acostado");
-        curRedCylinder.rotation = Quaternion.Slerp(curRedCylinder.localRotation, Quaternion.Euler(value, DH_Calculates.Instance.allLinks[optionsLink.value].teta, 270), 1f);
+        curRedCylinder.localRotation = Quaternion.Slerp(curRedCylinder.localRotation, Quaternion.Euler(value, DH_Calculates.Instance.allLinks[optionsLink.value].teta, 270), 1f);
 
         DH_Calculates.Instance.allLinks[optionsLink.value].alfa = value;
     }
@@ -204,6 +247,10 @@ public class RoboticArm : MonoBehaviour
         {
             DH_Calculates.Instance.allLinks[i].pointAxisRedCylinder.GetComponent<SetPositionRotation>().Rotating();
             DH_Calculates.Instance.allLinks[i].redCylinder.transform.SetParent(curBlueCylinder);
+            DH_Calculates.Instance.allLinks[i].redCylinder.transform.localScale = new Vector3(1, DH_Calculates.Instance.allLinks[i].redCylinder.transform.localScale.y, 1);
+
+            DH_Calculates.Instance.allLinks[i].pointAxisBlueCylinder.GetComponent<SetPositionRotation>().Rotating();
+            DH_Calculates.Instance.allLinks[i].blueCylinder.transform.SetParent(curBlueCylinder);
         }
     }
 
@@ -212,19 +259,35 @@ public class RoboticArm : MonoBehaviour
         for (int i = optionsLink.value; i < DH_Calculates.Instance.allLinks.Count; i++)
         {
             DH_Calculates.Instance.allLinks[i].redCylinder.transform.SetParent(null);
+            DH_Calculates.Instance.allLinks[i].redCylinder.transform.localScale = new Vector3(1, DH_Calculates.Instance.allLinks[i].redCylinder.transform.localScale.y, 1);
             DH_Calculates.Instance.allLinks[i].pointAxisRedCylinder.GetComponent<SetPositionRotation>().FinishRotation();
+
+            DH_Calculates.Instance.allLinks[i].blueCylinder.transform.SetParent(null);
+            DH_Calculates.Instance.allLinks[i].pointAxisBlueCylinder.GetComponent<SetPositionRotation>().FinishRotation();
         }
     }
 
     public void RotateRedCylinderAxis()
     {
         pointRedAxis.Rotating();
+        RedRotate();
     }
 
     public void FinishRotationRedCylinderAxis()
     {
         pointRedAxis.FinishRotation();
+        BlueFinishRotation();
     }
 
-    
+    public void RedRotate()
+    {
+        for (int i = optionsLink.value + 1; i < DH_Calculates.Instance.allLinks.Count; i++)
+        {
+            DH_Calculates.Instance.allLinks[i].pointAxisRedCylinder.GetComponent<SetPositionRotation>().Rotating();
+            DH_Calculates.Instance.allLinks[i].redCylinder.transform.SetParent(curRedCylinder);
+
+            DH_Calculates.Instance.allLinks[i].pointAxisBlueCylinder.GetComponent<SetPositionRotation>().Rotating();
+            DH_Calculates.Instance.allLinks[i].blueCylinder.transform.SetParent(curRedCylinder);
+        }
+    }
 }

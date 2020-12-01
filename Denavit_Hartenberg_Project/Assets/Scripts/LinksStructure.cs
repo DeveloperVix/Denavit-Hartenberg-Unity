@@ -12,6 +12,7 @@ using TMPro;
         public GameObject pointAxisBlueCylinder;
         public GameObject redCylinder;
         public GameObject pointAxisRedCylinder;
+        public GameObject teta_d_Slider;
 
         
         public float teta;
@@ -29,9 +30,12 @@ public class LinksStructure : MonoBehaviour
         0 = blueCylinder
         1 = pointAxis
         2 = redCylinder
+        3 = teta D slider
     */
     public GameObject[] prefabs;
 
+    public GameObject theCanvas;
+    
     LinksInitialization initLinks = new LinksInitialization();
     
     private void Start()
@@ -50,7 +54,18 @@ public class LinksStructure : MonoBehaviour
 
         newLink.redCylinder = Instantiate(prefabs[2], new Vector3(0,0,0), Quaternion.Euler(0, 0, 270));
         newLink.pointAxisRedCylinder = Instantiate(prefabs[1], new Vector3(0,0,0), Quaternion.identity);
-        
+
+        newLink.teta_d_Slider = Instantiate(prefabs[3]);
+        newLink.teta_d_Slider.transform.SetParent(theCanvas.transform);
+
+        newLink.redCylinder.transform.SetParent(null);
+        newLink.redCylinder.transform.localScale = new Vector3(1,0,1);
+        newLink.pointAxisRedCylinder.transform.SetParent(null);
+        newLink.pointAxisRedCylinder.transform.localScale = new Vector3(1,1,1);
+        newLink.blueCylinder.transform.SetParent(null);
+        newLink.blueCylinder.transform.localScale = new Vector3(1,0,1);
+        newLink.pointAxisBlueCylinder.transform.SetParent(null);
+        newLink.pointAxisBlueCylinder.transform.localScale = new Vector3(1,1,1);
         
         DH_Calculates.Instance.allLinks.Add(newLink);
         newLink.nameLink = "Nodo " + (DH_Calculates.Instance.allLinks.Count-1);
